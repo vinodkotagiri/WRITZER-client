@@ -2,52 +2,65 @@ import AdminLayout from '../../../components/layouts/component.adminlayout'
 import { useContext, useState, useEffect } from 'react'
 import { Layout, Row, Col, Input, Select, Modal, Button, Image } from 'antd'
 import Editor from 'rich-markdown-editor'
+import { ThemeContext } from '../../../context/theme'
+import axios from 'axios'
+import { uploadImage } from '../../../helpers/upload'
 import { toast } from 'react-hot-toast'
 import { useRouter } from 'next/router'
 import { UploadOutlined } from '@ant-design/icons'
-import Media from '../../../components/mediauploader/'
+import Media from '../../../components/mediauploader'
 import { MediaContext } from '../../../context/media'
-import { ThemeContext } from '../../../context/theme'
-import { uploadImage } from '../../../helpers/upload'
-import axios from 'axios'
-function NewPost({ page = 'admin' }) {
-	// load from local storage
-	const savedTitle = () => {
-		if (process.browser) {
-			if (localStorage.getItem('post-title')) {
-				return JSON.parse(localStorage.getItem('post-title'))
-			}
-		}
-	}
-	const savedContent = () => {
-		if (process.browser) {
-			if (localStorage.getItem('post-content')) {
-				return JSON.parse(localStorage.getItem('post-content'))
-			}
-		}
-	}
+
+const { Option } = Select
+
+function EditPost({ page = 'admin' }) {
 	// context
 	const [theme, setTheme] = useContext(ThemeContext)
 	const [media, setMedia] = useContext(MediaContext)
 	// state
-	const [title, setTitle] = useState(savedTitle())
-	const [content, setContent] = useState(savedContent())
-	const [categories, setCategories] = useState([])
+	const [postId, setPostId] = useState('')
+	const [title, setTitle] = useState('')
+	const [content, setContent] = useState('')
+	const [categories, setCategories] = useState([]) // post's existing categories
 	const [loadedCategories, setLoadedCategories] = useState([])
+	const [featuredImage, setFeaturedImage] = useState({})
 	const [visible, setVisible] = useState(false)
-	const [loading, setLoading] = useState(false)
+	const [loading, setLoading] = useState(true)
 	// media Modal
 	// const [visibleMedia, setVisibleMedia] = useState(false);
 	// hook
 	const router = useRouter()
 
 	useEffect(() => {
+		loadPost()
+	}, [router?.query?.slug])
+
+	useEffect(() => {
 		loadCategories()
 	}, [])
 
+	const loadPost = async () => {
+		try {
+			const { data } = await axios.get(`/post/${router.query.slug}`)
+			console.log('GOT POST FOR EDIT', data.post)
+			setTitle(data.post.title)
+			setContent(data.post.content)
+			setFeaturedImage(data.post.featuredImage)
+
+			setPostId(data.post._id)
+			// push category names
+			let arr = []
+			data.post.categories.map((c) => arr.push(c.name))
+			setCategories(arr)
+			setLoading(false)
+		} catch (err) {
+			console.log(err)
+		}
+	}
+
 	const loadCategories = async () => {
 		try {
-			const { data } = await axios.get('/category/all')
+			const { data } = await axios.get('category/all')
 			setLoadedCategories(data)
 		} catch (err) {
 			console.log(err)
@@ -55,33 +68,39 @@ function NewPost({ page = 'admin' }) {
 	}
 
 	const handlePublish = async () => {
-		setLoading(true)
-		await axios
-			.post('/post/create-post', {
+		try {
+			setLoading(true)
+			const { data } = await axios.put(`/post/edit-post/${postId}`, {
 				title,
 				content,
 				categories,
-				featuredImage: media?.selected?._id,
+				featuredImage: media?.selected?._id
+					? media?.selected?._id
+					: featuredImage?._id
+					? featuredImage._id
+					: undefined,
 			})
-			.then((response) => {
-				toast.success('Post created successfully')
-				localStorage.removeItem('post-title')
-				localStorage.removeItem('post-content')
+			if (data?.error) {
+				toast.error(data?.error)
+				setLoading(false)
+			} else {
+				// console.log("POST PUBLISHED RES => ", data);
+				toast.success('Post updated successfully')
 				setMedia({ ...media, selected: null })
-				setLoading(false)
 				router.push(`/${page}/posts`)
-			})
-			.catch((err) => {
-				console.log(err)
-				toast.error('Post create failed. Try again.')
-				setLoading(false)
-			})
+			}
+		} catch (err) {
+			console.log(err)
+			toast.error('Post create failed. Try again.')
+			setLoading(false)
+		}
 	}
+
 	return (
 		<AdminLayout>
 			<Row>
 				<Col span={14} offset={1}>
-					<h1>Create new post</h1>
+					<h1>Edit post</h1>
 					<Input
 						size='large'
 						value={title}
@@ -93,17 +112,21 @@ function NewPost({ page = 'admin' }) {
 					/>
 					<br />
 					<br />
-					<div className='editor-scroll'>
-						<Editor
-							dark={theme === 'light' ? false : true}
-							defaultValue={content}
-							onChange={(v) => {
-								setContent(v())
-								localStorage.setItem('post-content', JSON.stringify(v()))
-							}}
-							uploadImage={uploadImage}
-						/>
-					</div>
+					{loading ? (
+						<div>Loading...</div>
+					) : (
+						<div className='editor-scroll'>
+							<Editor
+								dark={theme === 'light' ? false : true}
+								defaultValue={content}
+								onChange={(v) => {
+									setContent(v())
+									localStorage.setItem('post-content', JSON.stringify(v()))
+								}}
+								uploadImage={uploadImage}
+							/>
+						</div>
+					)}
 
 					<br />
 					<br />
@@ -131,16 +154,23 @@ function NewPost({ page = 'admin' }) {
 						allowClear={true}
 						placeholder='Select categories'
 						style={{ width: '100%' }}
-						onChange={(v) => setCategories(v)}>
+						onChange={(v) => setCategories(v)}
+						value={[...categories]}>
 						{loadedCategories.map((item) => (
 							<Option key={item.name}>{item.name}</Option>
 						))}
 					</Select>
 
-					{media?.selected && (
+					{media?.selected ? (
 						<div style={{ marginTop: '15px' }}>
 							<Image width='100%' src={media?.selected?.url} />
 						</div>
+					) : featuredImage?.url ? (
+						<div style={{ marginTop: '15px' }}>
+							<Image width='100%' src={featuredImage?.url} />
+						</div>
+					) : (
+						''
 					)}
 
 					<Button
@@ -182,4 +212,4 @@ function NewPost({ page = 'admin' }) {
 	)
 }
 
-export default NewPost
+export default EditPost

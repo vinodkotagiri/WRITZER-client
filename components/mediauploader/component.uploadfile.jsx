@@ -14,7 +14,7 @@ const UploadFile = ({ redirectToLibrary = false, page = 'admin' }) => {
 
 	const props = {
 		name: 'file',
-		action: `http://localhost:5002//upload-image-file`,
+		action: `http://localhost:5002/post/upload-image-file`,
 		headers: {
 			Authorization: `Bearer ${auth.token}`,
 		},
