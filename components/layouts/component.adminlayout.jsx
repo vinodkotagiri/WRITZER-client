@@ -3,7 +3,6 @@ import { Layout } from 'antd'
 import AdminSider from '../../components/siders/component.adminsider'
 import { AuthContext } from '../../context/auth'
 import { useRouter } from 'next/router'
-import { LoadingOutlined } from '@ant-design/icons'
 import axios from 'axios'
 import LoadingToRedirect from '../redirect/component.redirect'
 

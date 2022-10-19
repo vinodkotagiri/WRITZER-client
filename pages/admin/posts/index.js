@@ -26,12 +26,13 @@ function Posts() {
 	const fetchPosts = async () => {
 		try {
 			const { data } = await axios.get('/post/posts-for-admin')
+			console.log(data)
 			setPost((prev) => ({ ...prev, posts: data }))
 		} catch (err) {
 			console.log(err)
 		}
 	}
-
+	// console.log(post)
 	const handleEdit = async (post) => {
 		// console.log("EDIT POST", post);
 		return router.push(`/admin/posts/${post.slug}`)

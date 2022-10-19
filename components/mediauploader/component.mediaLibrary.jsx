@@ -29,7 +29,7 @@ const MediaLibrary = ({ page = 'admin' }) => {
 	const props = {
 		name: 'file',
 		multiple: true,
-		action: `${process.env.NEXT_PUBLIC_API}/upload-image-file`,
+		action: `http://localhost:5002/post/upload-image-file`,
 		headers: {
 			Authorization: `Bearer ${auth.token}`,
 		},
@@ -56,7 +56,7 @@ const MediaLibrary = ({ page = 'admin' }) => {
 
 	const handleImageDelete = async (imageId) => {
 		try {
-			const { data } = await axios.delete(`/media/${imageId}`)
+			const { data } = await axios.delete(`/post/media/${imageId}`)
 			if (data.ok) {
 				setMedia({
 					...media,
