@@ -12,10 +12,10 @@ const AuthProvider = ({ children }) => {
 
 	// config axios
 	if (process.server) {
-		axios.defaults.baseURL = 'http://localhost:5002'
+		axios.defaults.baseURL = 'https://writzer-server.onrender.com'
 		axios.defaults.headers.common['Authorization'] = `Bearer ${auth?.token}`
 	} else {
-		axios.defaults.baseURL = 'http://localhost:5002'
+		axios.defaults.baseURL = 'https://writzer-server.onrender.com'
 		axios.defaults.headers.common['Authorization'] = `Bearer ${auth?.token}`
 	}
 

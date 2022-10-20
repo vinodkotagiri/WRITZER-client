@@ -83,7 +83,7 @@ function Home() {
 					<RenderProgress
 						number={stats.posts}
 						name='Posts'
-						link='/admin/posts'
+						link={auth?.user?.role === 'Admin' ? '/admin/posts' : '/'}
 					/>
 				</Col>
 				{/* comments */}
@@ -103,7 +103,7 @@ function Home() {
 					<RenderProgress
 						number={stats.categories}
 						name='Categories'
-						link='/admin/categories'
+						link={auth?.user?.role === 'Admin' ? '/admin/categories' : '/'}
 					/>
 				</Col>
 				{/* users */}
@@ -113,7 +113,7 @@ function Home() {
 					<RenderProgress
 						number={stats.users}
 						name='Users'
-						link='/admin/users'
+						link={auth?.user?.role === 'Admin' ? '/admin/users1' : '/'}
 					/>
 				</Col>
 			</Row>
