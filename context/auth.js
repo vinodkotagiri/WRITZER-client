@@ -14,9 +14,11 @@ const AuthProvider = ({ children }) => {
 	if (process.server) {
 		axios.defaults.baseURL = 'https://writzer-server.onrender.com'
 		axios.defaults.headers.common['Authorization'] = `Bearer ${auth?.token}`
+		axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*'
 	} else {
 		axios.defaults.baseURL = 'https://writzer-server.onrender.com'
 		axios.defaults.headers.common['Authorization'] = `Bearer ${auth?.token}`
+		axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*'
 	}
 
 	useEffect(() => {
