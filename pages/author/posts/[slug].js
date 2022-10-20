@@ -1,4 +1,4 @@
-import AuthorLayout from '../../../components/layouts/component.authorLayout'
+import AuthorLayout from '../../../components/layouts/component.authorlayout'
 import { useContext, useState, useEffect } from 'react'
 import { Layout, Row, Col, Input, Select, Modal, Button, Image } from 'antd'
 import Editor from 'rich-markdown-editor'

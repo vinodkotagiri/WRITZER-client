@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext } from 'react'
 import { Row, Col, Button, Input, List } from 'antd'
-import AuthorLayout from '../../../components/layouts/component.authorLayout'
+import AuthorLayout from '../../../components/layouts/component.authorlayout'
 import Link from 'next/link'
 import { PlusOutlined } from '@ant-design/icons'
 import axios from 'axios'
