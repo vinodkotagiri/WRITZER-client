@@ -52,7 +52,7 @@ const Navbar = () => {
 	return (
 		<Menu
 			onClick={handleClick}
-			selectedKeys={[current]}
+			selectedKeys={[]}
 			mode='horizontal'
 			theme='dark'>
 			<Menu.Item key='mail'>
@@ -62,18 +62,6 @@ const Navbar = () => {
 						alt='writzer'
 						style={{ height: '2.5rem' }}
 					/>
-				</Link>
-			</Menu.Item>
-
-			<Menu.Item key='posts' icon={<DatabaseOutlined />}>
-				<Link href='/posts'>
-					<a>Posts</a>
-				</Link>
-			</Menu.Item>
-
-			<Menu.Item key='contact' icon={<MailOutlined />}>
-				<Link href='/contact'>
-					<a>Contact</a>
 				</Link>
 			</Menu.Item>
 
@@ -90,6 +78,17 @@ const Navbar = () => {
 					<Menu.Item key='signin' icon={<UserOutlined />}>
 						<Link href='/signin'>
 							<a>Signin</a>
+						</Link>
+					</Menu.Item>
+					<Menu.Item key='posts' icon={<DatabaseOutlined />}>
+						<Link href='/posts'>
+							<a>Posts</a>
+						</Link>
+					</Menu.Item>
+
+					<Menu.Item key='contact' icon={<MailOutlined />}>
+						<Link href='/contact'>
+							<a>Contact</a>
 						</Link>
 					</Menu.Item>
 				</>
